@@ -1,0 +1,14 @@
+{
+  "name": "beapi/redirect-loop-detector",
+  "description": "Detect and break redirect loop from wp_redirect.",
+  "minimum-stability": "stable",
+  "license": "GPL-3.0-or-later",
+  "authors": [
+    {
+      "name": "BeAPI",
+      "email": "technique@beapi.fr"
+    }
+  ],
+  "keywords": ["wordpress", "wp_redirect", "loop"],
+  "type": "wordpress-muplugin"
+}
