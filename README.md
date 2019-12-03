@@ -1,6 +1,6 @@
 # Redirect Loop Detector
 
-Detect and break redirect loop.
+Detect and break redirect loop from wp_redirect.
 
 If your installation has debug mode activated, any redirect loop will trigger a wp_die screen.
 
