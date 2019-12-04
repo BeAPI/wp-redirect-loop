@@ -49,9 +49,18 @@ class WP_Redirect_Loop {
 	 * @return string
 	 */
 	public function wp_redirect( $location ) {
-		if ( untrailingslashit( $location ) === untrailingslashit( $this->get_current_url() ) ) {
-			$this->redirect_loop_handler( $location );
+		$origin_location = $location;
+
+		// Rebuild a full URL if redirect is relative path
+		$location_host = wp_parse_url( $location, PHP_URL_HOST );
+		if ( empty( $location_host ) ) {
+			$location = trailingslashit( $this->url_origin( $_SERVER, true ) ) . ltrim( $location, '/' );
 		}
+
+		if ( untrailingslashit( $location ) === untrailingslashit( $this->get_current_url() ) ) {
+			$this->redirect_loop_handler( $origin_location );
+		}
+
 
 		return $location;
 	}
@@ -65,7 +74,7 @@ class WP_Redirect_Loop {
 		$loop_initiator = $this->find_redirect_loop_initiator();
 
 		if ( defined( 'WP_DEBUG' ) && true === (bool) WP_DEBUG ) {
-			$html  = '<h2>Redirect loop detected</h2>' . PHP_EOL;
+			$html = '<h2>Redirect loop detected</h2>' . PHP_EOL;
 			$html .= '<p>The loop happened on the url : ' . esc_url( $location ) . '</p>' . PHP_EOL;
 			$html .= '<p>Here the details on what might be causing a infinite redirect :</p>' . PHP_EOL;
 
@@ -78,7 +87,7 @@ class WP_Redirect_Loop {
 			wp_die( $html, 'Redirect loop aborted' );
 		}
 
-		$msg  = sprintf( 'Redirect loop detected on the URL %s.', esc_url( $location ) );
+		$msg = sprintf( 'Redirect loop detected on the URL %s.', esc_url( $location ) );
 		$msg .= ( ! empty( $loop_initiator ) )
 			? sprintf( ' The loop might be cause by %s:%d.', $loop_initiator['file'], (int) $loop_initiator['line'] )
 			: '';
