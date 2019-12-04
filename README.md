@@ -1,9 +1,9 @@
-# Redirect Loop Detector
+# WP Redirect Loop
 
-Detect and break redirect loop from wp_redirect.
+Prevent redirect loops with wp_redirect() function
 
 If your installation has debug mode activated, any redirect loop will trigger a wp_die screen.
 
 ## Installation
 
-Just add the mu-plugin to your project.
+Just add the plugin to your project (as regular or mu plugin).
