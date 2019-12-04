@@ -1,29 +1,29 @@
 <?php
 /**
- * Plugin Name: Redirect Loop Detector
+ * Plugin Name: WP Redirect Loop
  * Plugin URI: https://beapi.fr
- * Description: Detect redirect loop.
- * Version: 1.0.0
+ * Description: Prevent redirect loops with wp_redirect() function
+ * Version: 1.0.1
  * Author: Be API
  * Author URI: http://beapi.fr
  */
 
 /**
- * Redirect Loop Detector plugin class.
+ * WP Redirect Loop plugin class.
  */
-class Redirect_Loop_Detector {
+class WP_Redirect_Loop {
 
 	/**
 	 * Plugin instance.
 	 *
-	 * @var Redirect_Loop_Detector
+	 * @var
 	 */
 	public static $instance = null;
 
 	/**
 	 * Plugin instance creator.
 	 *
-	 * @return Redirect_Loop_Detector
+	 * @return WP_Redirect_Loop
 	 */
 	public static function instance() {
 		if ( is_null( self::$instance ) ) {
@@ -62,22 +62,23 @@ class Redirect_Loop_Detector {
 	 * @param string $location
 	 */
 	protected function redirect_loop_handler( $location ) {
-
 		$loop_initiator = $this->find_redirect_loop_initiator();
 
 		if ( defined( 'WP_DEBUG' ) && true === (bool) WP_DEBUG ) {
-			$html = '';
-			$html .= '<h2>Redirect loop detected</h2>' . PHP_EOL;
+			$html  = '<h2>Redirect loop detected</h2>' . PHP_EOL;
 			$html .= '<p>The loop happened on the url : ' . esc_url( $location ) . '</p>' . PHP_EOL;
 			$html .= '<p>Here the details on what might be causing a infinite redirect :</p>' . PHP_EOL;
-			$html .= ( ! empty( $loop_initiator ) )
-				? '<pre>' . var_export( $loop_initiator, true ) . '</pre>' . PHP_EOL
-				: '<p><em>We could not detect which part of the code is causing a redirect.</em></p>';
+
+			if ( ! empty( $loop_initiator ) ) {
+				$html .= '<pre>' . var_export( $loop_initiator, true ) . '</pre>' . PHP_EOL;
+			} else {
+				$html .= '<p><em>We could not detect which part of the code is causing a redirect.</em></p>';
+			}
+
 			wp_die( $html, 'Redirect loop aborted' );
 		}
 
-		$msg = '';
-		$msg .= sprintf( 'Redirect loop detected on the URL %s.', esc_url( $location ) );
+		$msg  = sprintf( 'Redirect loop detected on the URL %s.', esc_url( $location ) );
 		$msg .= ( ! empty( $loop_initiator ) )
 			? sprintf( ' The loop might be cause by %s:%d.', $loop_initiator['file'], (int) $loop_initiator['line'] )
 			: '';
@@ -153,11 +154,11 @@ class Redirect_Loop_Detector {
 	 * @see https://stackoverflow.com/a/8891890
 	 */
 	protected function url_origin( $s, $use_forwarded_host = false ) {
-		$ssl      = ( ! empty( $s['HTTPS'] ) && $s['HTTPS'] == 'on' );
+		$ssl      = ( ! empty( $s['HTTPS'] ) && 'on' === $s['HTTPS'] );
 		$sp       = strtolower( $s['SERVER_PROTOCOL'] );
 		$protocol = substr( $sp, 0, strpos( $sp, '/' ) ) . ( ( $ssl ) ? 's' : '' );
 		$port     = $s['SERVER_PORT'];
-		$port     = ( ( ! $ssl && $port == '80' ) || ( $ssl && $port == '443' ) ) ? '' : ':' . $port;
+		$port     = ( ( ! $ssl && '80' === $port ) || ( $ssl && '443' === $port ) ) ? '' : ':' . $port;
 		$host     = ( $use_forwarded_host && isset( $s['HTTP_X_FORWARDED_HOST'] ) ) ? $s['HTTP_X_FORWARDED_HOST'] : ( isset( $s['HTTP_HOST'] ) ? $s['HTTP_HOST'] : null );
 		$host     = isset( $host ) ? $host : $s['SERVER_NAME'] . $port;
 
@@ -166,4 +167,4 @@ class Redirect_Loop_Detector {
 }
 
 // init plugin
-Redirect_Loop_Detector::instance();
+WP_Redirect_Loop::instance();
