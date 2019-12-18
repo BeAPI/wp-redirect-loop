@@ -70,7 +70,7 @@ class WP_Redirect_Loop {
 			$html .= '<p>Here the details on what might be causing a infinite redirect :</p>' . PHP_EOL;
 
 			if ( ! empty( $loop_initiator ) ) {
-				$html .= '<pre>' . var_export( $loop_initiator ) . '</pre>' . PHP_EOL;
+				$html .= '<pre>' . var_export( $loop_initiator, true ) . '</pre>' . PHP_EOL;
 			} else {
 				$html .= '<p><em>We could not detect which part of the code is causing a redirect.</em></p>';
 			}
@@ -83,7 +83,6 @@ class WP_Redirect_Loop {
 			? sprintf( ' The loop might be cause by %s:%d.', wp_normalize_path( $loop_initiator['file'] ), (int) $loop_initiator['line'] )
 			: '';
 		error_log( $msg );
-		die( $msg );
 	}
 
 	/**
