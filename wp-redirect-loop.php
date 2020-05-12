@@ -3,7 +3,7 @@
  * Plugin Name: WP Redirect Loop
  * Plugin URI: https://beapi.fr
  * Description: Prevent redirect loops with wp_redirect() function
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author: Be API
  * Author URI: http://beapi.fr
  */
