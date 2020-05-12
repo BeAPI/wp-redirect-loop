@@ -65,7 +65,7 @@ class WP_Redirect_Loop {
 		$loop_initiator = $this->find_redirect_loop_initiator();
 
 		if ( defined( 'WP_DEBUG' ) && true === (bool) WP_DEBUG ) {
-			$html  = '<h2>Redirect loop detected</h2>' . PHP_EOL;
+			$html = '<h2>Redirect loop detected</h2>' . PHP_EOL;
 			$html .= '<p>The loop happened on the url : ' . esc_url( $location ) . '</p>' . PHP_EOL;
 			$html .= '<p>Here the details on what might be causing a infinite redirect :</p>' . PHP_EOL;
 
@@ -78,9 +78,9 @@ class WP_Redirect_Loop {
 			wp_die( $html, 'Redirect loop aborted' );
 		}
 
-		$msg  = sprintf( 'Redirect loop detected on the URL %s.', esc_url( $location ) );
+		$msg = sprintf( 'Redirect loop detected on the URL %s.', esc_url( $location ) );
 		$msg .= ( ! empty( $loop_initiator ) )
-			? sprintf( ' The loop might be cause by %s:%d.', $loop_initiator['file'], (int) $loop_initiator['line'] )
+			? sprintf( ' The loop might be cause by %s:%d.', wp_normalize_path( $loop_initiator['file'] ), (int) $loop_initiator['line'] )
 			: '';
 		error_log( $msg );
 	}
@@ -117,7 +117,35 @@ class WP_Redirect_Loop {
 			break;
 		}
 
+		// Return only relative path
+		$loop_initiator = array_map( [ $this, 'normalize_path' ], $loop_initiator );
+
 		return $loop_initiator;
+	}
+
+	/**
+	 * Replace full path by relative version
+	 *
+	 * @param mixed $value
+	 *
+	 * @return mixed
+	 * @see : wp_debug_backtrace_summary()
+	 */
+	protected function normalize_path( $value ) {
+		static $truncate_paths;
+
+		if ( ! is_string( $value ) ) {
+			return $value;
+		}
+
+		if ( ! isset( $truncate_paths ) ) {
+			$truncate_paths = [
+				wp_normalize_path( WP_CONTENT_DIR ),
+				wp_normalize_path( ABSPATH ),
+			];
+		}
+
+		return str_replace( $truncate_paths, '', $value );
 	}
 
 	/**
