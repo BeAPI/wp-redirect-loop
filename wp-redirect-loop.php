@@ -118,7 +118,7 @@ class WP_Redirect_Loop {
 		}
 
 		// Return only relative path
-		$loop_initiator = array_map( array( $this, 'normalize_path' ), $loop_initiator );
+		$loop_initiator = array_map( [ $this, 'normalize_path' ], $loop_initiator );
 
 		return $loop_initiator;
 	}
@@ -139,10 +139,10 @@ class WP_Redirect_Loop {
 		}
 
 		if ( ! isset( $truncate_paths ) ) {
-			$truncate_paths = array(
+			$truncate_paths = [
 				wp_normalize_path( WP_CONTENT_DIR ),
 				wp_normalize_path( ABSPATH ),
-			);
+			];
 		}
 
 		return str_replace( $truncate_paths, '', $value );
