@@ -49,9 +49,18 @@ class WP_Redirect_Loop {
 	 * @return string
 	 */
 	public function wp_redirect( $location ) {
-		if ( untrailingslashit( $location ) === untrailingslashit( $this->get_current_url() ) ) {
-			$this->redirect_loop_handler( $location );
+		$origin_location = $location;
+
+		// Rebuild a full URL if redirect is relative path
+		$location_host = wp_parse_url( $location, PHP_URL_HOST );
+		if ( empty( $location_host ) ) {
+			$location = trailingslashit( $this->url_origin( $_SERVER, true ) ) . ltrim( $location, '/' );
 		}
+
+		if ( untrailingslashit( $location ) === untrailingslashit( $this->get_current_url() ) ) {
+			$this->redirect_loop_handler( $origin_location );
+		}
+
 
 		return $location;
 	}
