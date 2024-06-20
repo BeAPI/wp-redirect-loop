@@ -49,7 +49,7 @@ class WP_Redirect_Loop {
 	 * @return string
 	 */
 	public function wp_redirect( $location ) {
-		if ( untrailingslashit( $location ) === untrailingslashit( $this->get_current_url() ) ) {
+		if ( $location === $this->get_current_url() ) {
 			$this->redirect_loop_handler( $location );
 		}
 
